@@ -5,6 +5,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 import subprocess, sys, os
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from helpers import *
+import time
 
 
 NAME = "alice"
@@ -23,7 +24,8 @@ def ns_authentication(sock, server_name):
     rsa_key = rsa.import_key("RsaKey.asc")
 
     # get public key of file transfer server
-    subprocess.Popen([sys.executable, "..\\pks\\pks.py", "--extract"])
+    subprocess.Popen([sys.executable, "../pks/pks.py", "--extract"])
+    time.sleep(1)
     pks_address = (PKS_HOST, PKS_PORT)
     server_pkey = ns.get_public_key(pks_address, server_name, NAME, rsa_key)
     server_pkey = rsa.import_key(server_pkey)

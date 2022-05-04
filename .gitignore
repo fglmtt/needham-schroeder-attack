@@ -137,6 +137,11 @@ pip-selfcheck.json
 !.vscode/extensions.json
 
 ### RSA exported keys ###
-#*.asc
+*.asc
+
+### Uploaded/downloaded files ###
+alice/*/*
+bob/*/*
+mallory/*/*
 
 # End of https://www.gitignore.io/api/python,visualstudiocode

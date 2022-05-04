@@ -27,7 +27,7 @@ def setup():
                 host, pub_key = request.split(b'$')
                 # save extracted public key as local file
                 host = host.decode("utf-8")
-                with open("pks\\" + host + ".asc", "wb") as outputStream:
+                with open("pks/" + host + ".asc", "wb") as outputStream:
                     outputStream.write(pub_key)
                 # send response back to client
                 print("PKS: recieved", host, "public key")
@@ -55,8 +55,8 @@ def extract():
                 host_names = request.decode("utf-8").split(',')
                 name_a, name_b = host_names
                 # get public keys from local files
-                key_a = rsa.import_key("..\\pks\\" + name_a + ".asc")
-                key_b = rsa.import_key("..\\pks\\" + name_b + ".asc")
+                key_a = rsa.import_key("../pks/" + name_a + ".asc")
+                key_b = rsa.import_key("../pks/" + name_b + ".asc")
                 # encrypt the public key in chunks
                 pub_key_b = rsa.export_public_key(key_b).decode("utf-8")
                 response = "{},{}".format(pub_key_b, name_b)

@@ -8,11 +8,11 @@ PKS_HOST = '127.0.0.1'
 PKS_PORT = 65432
 
 # connection for Bob
-BOB_HOST = '127.0.0.2'
+BOB_HOST = '127.0.0.1'
 BOB_PORT = 65433
 
 # connection for Mallory
-MAL_HOST = '127.0.0.3'
+MAL_HOST = '127.0.0.1'
 MAL_PORT = 65434
 
 # signals

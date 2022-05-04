@@ -5,6 +5,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 import subprocess, sys, os
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from helpers import *
+import time
 
 
 NAME = "bob"
@@ -28,7 +29,8 @@ def ns_authentication(conn):
     print("Bob: recieved nonce {} from client {}".format(client_nonce, client_name))
 
     # get client's public key
-    subprocess.Popen([sys.executable, "..\\pks\\pks.py", "--extract"])
+    subprocess.Popen([sys.executable, "../pks/pks.py", "--extract"])
+    time.sleep(1)
     pks_address = (PKS_HOST, PKS_PORT)
     client_pkey = ns.get_public_key(pks_address, client_name, NAME, rsa_key)
     client_pkey = rsa.import_key(client_pkey)

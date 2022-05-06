@@ -4,17 +4,13 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from helpers import *
 
 
-# connection details
-HOST = '127.0.0.1'
-PORT = 65432
-
-def setup():
+def setup(host, port):
     """() -> NoneType
 
     Opens the public key server for importing RSA public keys.
     """
     with socket(AF_INET, SOCK_STREAM) as sock:
-        sock.bind((HOST, PORT))
+        sock.bind((host, port))
         sock.listen()
         conn, addr = sock.accept()
         with conn:
@@ -35,14 +31,14 @@ def setup():
                 conn.sendall(response)
 
 
-def extract():
-    """() -> NoneType
+def extract(host, port):
+    """(host, port) -> NoneType
 
     Opens the public key server to extract RSA public keys.
     The public keys must have already been imported to the server.
     """
     with socket(AF_INET, SOCK_STREAM) as sock:
-        sock.bind((HOST, PORT))
+        sock.bind((host, port))
         sock.listen()
         conn, addr = sock.accept()
         with conn:
@@ -73,23 +69,40 @@ if __name__ == "__main__":
     def usage():
         print ('Usage:    ' + os.path.basename(__file__) + ' options')
         print ('Options:')
+        print ('\t -h, --host')
+        print ('\t -p, --port')
         print ('\t -s, --setup')
         print ('\t -e, --extract')
         sys.exit(2)
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hse", ["help", "setup", "extract"])
+        opts, args = getopt.getopt(sys.argv[1:], "h:p:se", ["host=", "port=", "setup", "extract"])
         if not opts:
             raise getopt.GetoptError("Enter an option")
     except getopt.GetoptError as err:
         print(err)
         usage()
     # extract parameters
+    host = None
+    port = None
+    mode = None
     for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            usage()
+        #if opt in ("--help"):
+            #usage()
+        if opt in ("-h", "--host"):
+            host = arg
+        elif opt in ("-p", "--port"):
+            port = int(arg)
         elif opt in ("-s", "--setup"):
-            print("PKS: listening for RSA keys to be added")
-            setup()
+            mode = "setup"
         elif opt in ("-e", "--extract"):
-            print("PKS: listening for a key to be extracted")
-            extract()
+            mode = "extract"
+
+    if mode == "setup":
+        print("PKS: listening ({}:{}) for RSA keys to be added".format(host, port))
+        setup(host, port)
+    elif mode == "extract":
+        print("PKS: listening ({}:{}) for a key to be extracted".format(host, port))
+        extract(host, port)
+    else:
+        print("Must specify either setup or extract")
+        usage()

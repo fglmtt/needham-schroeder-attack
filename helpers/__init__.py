@@ -21,11 +21,3 @@ CHARLIE_PORT = 65434
 # signals
 RESP_VERIFIED = 200
 RESP_DENIED = 401
-SIG_START = '419'
-SIG_GOOD = '420'
-SIG_BAD = '421'
-SIG_END = '422'
-
-# modes of file transfer
-UPLOAD = 'u'
-DOWNLOAD = 'd'

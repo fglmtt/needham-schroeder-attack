@@ -20,7 +20,7 @@ def nspk_authentication(conn):
     # get RSA key of Bob for decrypting
     rsa_key = rsa.import_key("RsaKey.asc")
 
-    # A -- {N_A, A}(K_PB) --> B
+    # A -- {N_A, A}(PK_B) --> B
     request = rsa.decrypt(rsa_key, conn.recv(1024))
     client_nonce, client_name = request.split(',')
     print("Bob: recieved nonce {} from client {}".format(client_nonce, client_name))
@@ -35,14 +35,14 @@ def nspk_authentication(conn):
     client_pkey = ns.get_public_key(pks_address, client_name, NAME, rsa_key)
     client_pkey = rsa.import_key(client_pkey)
 
-    # A <-- {N_A, N_B} -- B
+    # A <-- {N_A, N_B}(PK_A) -- B
     bob_nonce = ns.generate_nonce()
     response = "{},{}".format(client_nonce, bob_nonce)
     response = rsa.encrypt(client_pkey, response)
     conn.sendall(response)
     print("Bob: sent nonces {}, {} to {}".format(client_nonce, bob_nonce, client_name))
 
-    # A -- {N_B} --> B
+    # A -- {N_B}(PK_B) --> B
     request = rsa.decrypt(rsa_key, conn.recv(1024))
     bob_resp_nonce = int(request)
     print("Bob: recieved nonce {}".format(bob_resp_nonce))

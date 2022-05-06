@@ -31,14 +31,14 @@ def nspk_authentication(sock, server_name):
     server_pkey = ns.get_public_key(pks_address, server_name, NAME, rsa_key)
     server_pkey = rsa.import_key(server_pkey)
 
-    # A -- {N_A, A}(K_PB) --> B
+    # A -- {N_A, A}(PK_B) --> B
     alice_nonce = ns.generate_nonce()
     request = "{},{}".format(alice_nonce, NAME)
     request = rsa.encrypt(server_pkey, request)
     sock.sendall(request)
     print("Alice: sent nonce {} to {}".format(alice_nonce, server_name))
 
-    # A <-- {N_A, N_B}(K_PA) -- B
+    # A <-- {N_A, N_B}(PK_A) -- B
     response = rsa.decrypt(rsa_key, sock.recv(1024))
     alice_resp_nonce, server_nonce = map(int, response.split(','))
     print("Alice: recieved nonces {}, {} from {}".format(alice_resp_nonce, server_nonce, server_name))
@@ -46,7 +46,7 @@ def nspk_authentication(sock, server_name):
     # check if Bob actually did recieve Alice's nonce
     if alice_resp_nonce == alice_nonce:
         print("Alice: connection with {} verified!".format(server_name))
-        # A -- {N_B}(K_PB) --> B
+        # A -- {N_B}(PK_B) --> B
         request = "{}".format(server_nonce)
         request = rsa.encrypt(server_pkey, request)
         sock.sendall(request)

@@ -22,7 +22,7 @@ def attack(conn):
     # get RSA key of Charlie for decrypting
     rsa_key = rsa.import_key("RsaKey.asc")
 
-    # A -- {N_A, A}(KP_M) --> M
+    # A -- {N_A, A}(PK_C) --> C
     req_client = rsa.decrypt(rsa_key, conn.recv(1024))
     client_nonce, client_name = req_client.split(',')
     print("Charlie: recieved nonce {} from client {}".format(client_nonce, client_name))
@@ -46,27 +46,28 @@ def attack(conn):
         sock.connect((BOB_HOST, BOB_PORT))
         print("Charlie: connected with bob")
 
-        # C -- {N_A, A}(KP_B) --> B
+        # C -- {N_A, A}(PK_B) --> B
         sock.sendall(req_bob)
         print("Charlie: sent nonce {} to bob, pretending to be {}".format(client_nonce, client_name))
 
-        # M <-- {N_A, N_B}(KP_A) -- B
+        # C <-- {N_A, N_B}(PK_A) -- B
         resp_bob = sock.recv(1024)
         print("Charlie: recieved encrypted nonces from bob")
 
-        # A <-- {N_A, N_B}(KP_A) -- C
+        # A <-- {N_A, N_B}(PK_A) -- C
         conn.sendall(resp_bob)
-        print("Charlie: redirect encrypted nonces to {}".format(client_name))
+        print("Charlie: redirected encrypted nonces to {}".format(client_name))
 
-        # A -- {N_B}(KP_C) --> C
+        # A -- {N_B}(PK_C) --> C
         req_client = conn.recv(1024)
         if req_client.isdigit() and int(req_client) == RESP_DENIED:
             sock.sendall(req_client)
-            return print("Charlie: I've been spotted! Shutting down...")
+            return print("Charlie: I've been spotted!")
+
         bob_nonce = rsa.decrypt(rsa_key, req_client)
         print("Charlie: recieved bob's nonce {} from {}".format(bob_nonce, client_name))
 
-        # M -- {K, N_B}(KP_B) --> B
+        # C -- {N_B}(PK_B) --> B
         req_bob = rsa.encrypt(bob_pkey, bob_nonce)
         sock.sendall(req_bob)
         print("Charlie: redirect nonce {} to bob".format(bob_nonce))

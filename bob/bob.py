@@ -56,6 +56,8 @@ def nspk_authentication(conn):
         conn.sendall(response)
     else:
         print("Bob: nonces {} and {} do not match!".format(bob_nonce, bob_resp_nonce))
+        response = bytes(str(RESP_DENIED), "utf-8")
+        conn.sendall(response)
 
 if __name__ == "__main__":
     print("Bob: waiting to authenticate people...")
